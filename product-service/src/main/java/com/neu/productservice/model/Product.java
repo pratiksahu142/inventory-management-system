@@ -3,7 +3,9 @@ package com.neu.productservice.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,15 +22,18 @@ import lombok.Setter;
 @Builder(toBuilder = true)
 @Table(name = "products")
 @Entity
+@SequenceGenerator(name="seq", initialValue=5, allocationSize=1000)
 public class Product {
 
-  @GeneratedValue
   @Id
-  @Column(name = "pid")
-  private int productId;
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
+  private Integer id;
 
   @Column(name = "cid")
-  private int categoryId;
+  private Integer categoryId;
+
+  @Column(name = "iid")
+  private Integer inventoryId;
 
   @Column(name = "name")
   private String name;
@@ -42,11 +47,68 @@ public class Product {
   @Column(name = "description")
   private String description;
 
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
+  public int getCategoryId() {
+    return categoryId;
+  }
+
+  public void setCategoryId(int categoryId) {
+    this.categoryId = categoryId;
+  }
+
+  public int getInventoryId() {
+    return inventoryId;
+  }
+
+  public void setInventoryId(int inventoryId) {
+    this.inventoryId = inventoryId;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public int getPrice() {
+    return price;
+  }
+
+  public void setPrice(int price) {
+    this.price = price;
+  }
+
+  public int getQuantity() {
+    return quantity;
+  }
+
+  public void setQuantity(int quantity) {
+    this.quantity = quantity;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
   @Override
   public String toString() {
     return "Product{" +
-        "productId=" + productId +
+        "productId=" + id +
         ", categoryId=" + categoryId +
+        ", inventoryId=" + inventoryId +
         ", name='" + name + '\'' +
         ", price=" + price +
         ", quantity=" + quantity +
