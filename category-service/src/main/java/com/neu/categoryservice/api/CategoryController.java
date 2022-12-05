@@ -1,6 +1,7 @@
 package com.neu.categoryservice.api;
 
 import com.neu.categoryservice.dao.CategoryRepository;
+import com.neu.categoryservice.model.Categories;
 import com.neu.categoryservice.model.Category;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,12 +42,12 @@ public class CategoryController {
   }
 
   @RequestMapping("/")
-  public ResponseEntity<List<Category>> getAllCategories() {
-    Iterable<Category> categoryIterator = categoryRepository.findAll();
+  public ResponseEntity<Categories> getAllCategories() {
     List<Category> categories = new ArrayList<>();
-    categoryIterator.forEach(categories::add);
+
+    categoryRepository.findAll().forEach(categories::add);
     if (categories.size() > 0) {
-      return new ResponseEntity<>(categories, HttpStatus.OK);
+      return new ResponseEntity<>(new Categories(categories), HttpStatus.OK);
     } else {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

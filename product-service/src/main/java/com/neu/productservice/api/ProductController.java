@@ -2,6 +2,7 @@ package com.neu.productservice.api;
 
 import com.neu.productservice.dao.ProductRepository;
 import com.neu.productservice.model.Product;
+import com.neu.productservice.model.Products;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,28 +32,27 @@ public class ProductController {
   }
 
   @RequestMapping("/")
-  public ResponseEntity<List<Product>> getAllProducts() {
-    Iterable<Product> productIterator = productRepository.findAll();
+  public ResponseEntity<Products> getAllProducts() {
     List<Product> products = new ArrayList<>();
-    productIterator.forEach(products::add);
+    productRepository.findAll().forEach(products::add);
     if (products.size() > 0) {
-      return new ResponseEntity<>(products, HttpStatus.OK);
+      return new ResponseEntity<>(new Products(products), HttpStatus.OK);
     } else {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
   }
 
-  @RequestMapping("/inventory/{inventoryId}")
-  public ResponseEntity<List<Product>> getAllInventoryProducts(@PathVariable("inventoryId") int inventoryId) {
-    Iterable<Product> productIterator = productRepository.findByInventoryId(inventoryId);
-    List<Product> products = new ArrayList<>();
-    productIterator.forEach(products::add);
-    if (products.size() > 0) {
-      return new ResponseEntity<>(products, HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-  }
+//  @RequestMapping("/inventory/{inventoryId}")
+//  public ResponseEntity<Products> getAllInventoryProducts(
+//      @PathVariable("inventoryId") int inventoryId) {
+//    List<Product> products = new ArrayList<>();
+//    productRepository.findByInventoryId(inventoryId).forEach(products::add);
+//    if (products.size() > 0) {
+//      return new ResponseEntity<>(new Products(products), HttpStatus.OK);
+//    } else {
+//      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//    }
+//  }
 
   @PostMapping("/")
   public ResponseEntity<Product> addProduct(@RequestBody Product product) {
@@ -61,7 +61,6 @@ public class ProductController {
           .save(Product.builder()
               .name(product.getName())
               .categoryId(product.getCategoryId())
-              .inventoryId(product.getInventoryId())
               .price(product.getPrice())
               .quantity(product.getQuantity())
               .description(product.getDescription())
@@ -83,7 +82,6 @@ public class ProductController {
       oldProduct.setName(product.getName());
       oldProduct.setPrice(product.getPrice());
       oldProduct.setCategoryId(product.getCategoryId());
-      oldProduct.setInventoryId(product.getInventoryId());
       oldProduct.setQuantity(product.getQuantity());
       oldProduct.setDescription(product.getDescription());
       return new ResponseEntity<>(productRepository.save(oldProduct), HttpStatus.OK);

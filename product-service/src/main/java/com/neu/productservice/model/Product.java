@@ -22,18 +22,15 @@ import lombok.Setter;
 @Builder(toBuilder = true)
 @Table(name = "products")
 @Entity
-@SequenceGenerator(name="seq", initialValue=5, allocationSize=1000)
+@SequenceGenerator(name = "pseq", initialValue = 5, allocationSize = 100000)
 public class Product {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pseq")
   private Integer id;
 
   @Column(name = "cid")
   private Integer categoryId;
-
-  @Column(name = "iid")
-  private Integer inventoryId;
 
   @Column(name = "name")
   private String name;
@@ -61,14 +58,6 @@ public class Product {
 
   public void setCategoryId(int categoryId) {
     this.categoryId = categoryId;
-  }
-
-  public int getInventoryId() {
-    return inventoryId;
-  }
-
-  public void setInventoryId(int inventoryId) {
-    this.inventoryId = inventoryId;
   }
 
   public String getName() {
@@ -108,7 +97,6 @@ public class Product {
     return "Product{" +
         "productId=" + id +
         ", categoryId=" + categoryId +
-        ", inventoryId=" + inventoryId +
         ", name='" + name + '\'' +
         ", price=" + price +
         ", quantity=" + quantity +

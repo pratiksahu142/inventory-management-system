@@ -1,0 +1,93 @@
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+    instances:
+      #      movieInfoService:
+      #        registerHealthIndicator: true
+      #        eventConsumerBufferSize: 10
+      #        # Failure rate in percentage
+      #        failureRateThreshold: 50
+      #        # No. of calls before failure rate is calculated
+      #        minimumNumberOfCalls: 10
+      #        slidingWindowSize: 10
+      #        slidingWindowType: COUNT_BASED
+      #        # Open state config
+      #        automaticTransitionFromOpenToHalfOpenEnabled: true
+      #        waitDurationInOpenState: 10s
+      #        permittedNumberOfCallsInHalfOpenState: 3
+      #        #Slow call config
+      #        slowCallDurationThreshold: 2s
+      #        slowCallRateThreshold: 30
+      categoryService:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 2
+        slidingWindowSize: 5
+        waitDurationInOpenState: 10s
+        slidingWindowType: COUNT_BASED
+
+
+  #  ratelimiter:
+  #    configs:
+  #      default:
+  #        registerHealthIndicator: true
+  #    instances:
+  #      movieInfoService:
+  #        # default wait time a thread waits for a permission
+  #        timeoutDuration: 5s
+  #        limitRefreshPeriod: 500ns
+  #        # number of permissions available during one limit refresh period
+  #        limitForPeriod: 50
+
+  #ThreadPool based bulkhead
+  #  thread-pool-bulkhead:
+  #    instances:
+  #      movieInfoService:
+  #        maxThreadPoolSize: 10
+  #        coreThreadPoolSize: 5
+  #        queueCapacity: 4
+  #        keepAliveDuration: 5s
+  # Semaphore based bulkhead
+  bulkhead:
+    instances:
+      categoryService:
+        maxConcurrentCalls: 25
+        maxWaitDuration: 0
+
+
+  retry:
+    instances:
+      categoryService:
+        maxRetryAttempts: 3
+        waitDuration: 5s
+        # Backoff config like 3 retries will be there, after 1st attempt fails, wait duration will be multiplied by 2 and then 2nd retry, then same again
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+
+
+  timelimiter:
+    instances:
+      categoryService:
+        timeoutDuration: 2s
+        cancelRunningFuture: true
+
+
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+    ratelimiters:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always

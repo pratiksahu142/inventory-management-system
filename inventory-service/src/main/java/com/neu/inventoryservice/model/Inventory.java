@@ -1,4 +1,4 @@
-package com.neu.categoryservice.model;
+package com.neu.inventoryservice.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,13 +20,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder(toBuilder = true)
-@Table(name = "categories")
+@Table(name = "inventories")
 @Entity
-@SequenceGenerator(name="cseq", initialValue=6, allocationSize=1000)
-public class Category {
+@SequenceGenerator(name = "iseq", initialValue = 2, allocationSize = 1000)
+public class Inventory {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cseq")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "iseq")
   private Integer id;
 
   @Column(name = "name")
@@ -50,8 +50,8 @@ public class Category {
 
   @Override
   public String toString() {
-    return "Category{" +
-        "categoryId=" + id +
+    return "Inventory{" +
+        "id=" + id +
         ", name='" + name + '\'' +
         '}';
   }

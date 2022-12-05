@@ -53,7 +53,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"categoryId\": 5,\n    \"inventoryId\": 2,\n    \"name\": \"Chilli\",\n    \"price\": 5,\n    \"quantity\": 1700,\n    \"description\": \"Chilli pepper\"\n}",
+					"raw": "{\n    \"categoryId\": 4,\n    \"name\": \"Marker\",\n    \"price\": 2,\n    \"quantity\": 10000,\n    \"description\": \"Marker\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -82,7 +82,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\": 1,\n    \"categoryId\": 1,\n    \"inventoryId\": 1,\n    \"name\": \"ToothPaste2\",\n    \"price\": 10,\n    \"quantity\": 100,\n    \"description\": \"Toothpaste2\"\n}",
+					"raw": "{\n    \"categoryId\": 1,\n    \"inventoryId\": 2,\n    \"name\": \"ToothPaste2\",\n    \"price\": 10,\n    \"quantity\": 100,\n    \"description\": \"Toothpaste2\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -131,14 +131,6 @@
 						"1"
 					]
 				}
-			},
-			"response": []
-		},
-		{
-			"name": "getAllInventoryProducts",
-			"request": {
-				"method": "GET",
-				"header": []
 			},
 			"response": []
 		}
