@@ -38,9 +38,6 @@ public class Product {
   @Column(name = "price")
   private int price;
 
-  @Column(name = "quantity")
-  private int quantity;
-
   @Column(name = "description")
   private String description;
 
@@ -76,14 +73,6 @@ public class Product {
     this.price = price;
   }
 
-  public int getQuantity() {
-    return quantity;
-  }
-
-  public void setQuantity(int quantity) {
-    this.quantity = quantity;
-  }
-
   public String getDescription() {
     return description;
   }
@@ -99,7 +88,6 @@ public class Product {
         ", categoryId=" + categoryId +
         ", name='" + name + '\'' +
         ", price=" + price +
-        ", quantity=" + quantity +
         ", description='" + description + '\'' +
         '}';
   }

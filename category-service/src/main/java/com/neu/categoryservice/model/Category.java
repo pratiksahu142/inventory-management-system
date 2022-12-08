@@ -22,7 +22,7 @@ import lombok.Setter;
 @Builder(toBuilder = true)
 @Table(name = "categories")
 @Entity
-@SequenceGenerator(name="cseq", initialValue=6, allocationSize=1000)
+@SequenceGenerator(name = "cseq", initialValue = 6, allocationSize = 1000)
 public class Category {
 
   @Id

@@ -1,5 +1,17 @@
 package com.neu.inventoryservice.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@EqualsAndHashCode
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder(toBuilder = true)
 public class Product {
 
   private Integer id;
@@ -9,8 +21,6 @@ public class Product {
   private String name;
 
   private int price;
-
-  private int quantity;
 
   private String description;
 
@@ -47,14 +57,6 @@ public class Product {
 
   public void setPrice(int price) {
     this.price = price;
-  }
-
-  public int getQuantity() {
-    return quantity;
-  }
-
-  public void setQuantity(int quantity) {
-    this.quantity = quantity;
   }
 
   public String getDescription() {

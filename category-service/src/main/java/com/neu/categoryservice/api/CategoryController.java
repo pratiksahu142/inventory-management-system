@@ -30,6 +30,16 @@ public class CategoryController {
         .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
+  @RequestMapping("/find/{categoryName}")
+  public ResponseEntity<Categories> getCategoryByName(@PathVariable("categoryName") String categoryName) {
+    List<Category> categories = new ArrayList<>(categoryRepository.findAllByName(categoryName));
+    if (categories.size() > 0) {
+      return new ResponseEntity<>(new Categories(categories), HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(new Categories(new ArrayList<>()), HttpStatus.OK);
+    }
+  }
+
   @PostMapping("/")
   public ResponseEntity<Category> addCategory(@RequestBody Category category) {
     try {

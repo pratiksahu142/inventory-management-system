@@ -2,7 +2,6 @@ package com.neu.inventoryservice.services;
 
 import com.neu.inventoryservice.model.Categories;
 import com.neu.inventoryservice.model.Category;
-import com.neu.inventoryservice.model.Product;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +22,11 @@ public class CategoryService {
     return restTemplate.getForObject("http://category-service/category/", Categories.class);
   }
 
+  public Categories getAllCategoriesByName(String name) {
+    return restTemplate.getForObject("http://category-service/category/find/"+name, Categories.class);
+  }
+
+
   public Categories getFallbackCategory(Throwable t) {
     System.out.println("*******Category Fallback Activated*******");
     List<Category> categoryList = new ArrayList<>();
@@ -33,6 +37,7 @@ public class CategoryService {
   }
 
   public Category addCategory(Category newCategory) {
-    return restTemplate.postForObject("http://category-service/category/", newCategory, Category.class);
+    return restTemplate.postForObject("http://category-service/category/", newCategory,
+        Category.class);
   }
 }

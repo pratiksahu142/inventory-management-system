@@ -31,6 +31,16 @@ public class ProductController {
         .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
+  @RequestMapping("/find/{productName}")
+  public ResponseEntity<Products> getProductByName(@PathVariable("productName") String name) {
+    List<Product> products = new ArrayList<>(productRepository.findAllByName(name));
+    if (products.size() > 0) {
+      return new ResponseEntity<>(new Products(products), HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(new Products(new ArrayList<>()), HttpStatus.OK);
+    }
+  }
+
   @RequestMapping("/")
   public ResponseEntity<Products> getAllProducts() {
     List<Product> products = new ArrayList<>();
@@ -62,7 +72,6 @@ public class ProductController {
               .name(product.getName())
               .categoryId(product.getCategoryId())
               .price(product.getPrice())
-              .quantity(product.getQuantity())
               .description(product.getDescription())
               .build());
       return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
@@ -82,7 +91,6 @@ public class ProductController {
       oldProduct.setName(product.getName());
       oldProduct.setPrice(product.getPrice());
       oldProduct.setCategoryId(product.getCategoryId());
-      oldProduct.setQuantity(product.getQuantity());
       oldProduct.setDescription(product.getDescription());
       return new ResponseEntity<>(productRepository.save(oldProduct), HttpStatus.OK);
     } else {

@@ -12,12 +12,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8082/category/",
+					"raw": "http://localhost:8090/category/",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8082",
+					"port": "8090",
 					"path": [
 						"category",
 						""
@@ -90,6 +90,27 @@
 					"path": [
 						"category",
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getByName",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8090/category/find/Groceries",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"category",
+						"find",
+						"Groceries"
 					]
 				}
 			},

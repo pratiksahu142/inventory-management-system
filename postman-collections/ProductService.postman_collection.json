@@ -53,7 +53,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"categoryId\": 4,\n    \"name\": \"Marker\",\n    \"price\": 2,\n    \"quantity\": 10000,\n    \"description\": \"Marker\"\n}",
+					"raw": "{\n    \"categoryId\": 4,\n    \"name\": \"Marker\",\n    \"price\": 2,\n    \"description\": \"Marker\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -82,7 +82,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"categoryId\": 1,\n    \"inventoryId\": 2,\n    \"name\": \"ToothPaste2\",\n    \"price\": 10,\n    \"quantity\": 100,\n    \"description\": \"Toothpaste2\"\n}",
+					"raw": "{\n    \"categoryId\": 1,\n    \"inventoryId\": 2,\n    \"name\": \"ToothPaste2\",\n    \"price\": 10,\n    \"description\": \"Toothpaste2\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -129,6 +129,27 @@
 						"product",
 						"category",
 						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getByName",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8083/product/find/Pepper",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"product",
+						"find",
+						"Pepper"
 					]
 				}
 			},

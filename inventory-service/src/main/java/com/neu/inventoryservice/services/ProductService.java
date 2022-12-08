@@ -12,13 +12,16 @@ public class ProductService {
   @Autowired
   RestTemplate restTemplate;
 
-  public Products getAllProductsInInventory(Integer inventoryId) {
-    return restTemplate.getForObject("http://product-service/product/inventory/" + inventoryId,
-        Products.class);
+  public Products getAllProducts() {
+    return restTemplate.getForObject("http://product-service/product/", Products.class);
   }
 
   public Product getProductById(Integer productId) {
     return restTemplate.getForObject("http://product-service/product/" + productId, Product.class);
+  }
+
+  public Products getProductByName(String name) {
+    return restTemplate.getForObject("http://product-service/product/find/" + name, Products.class);
   }
 
   public Product addProduct(Product product) {
