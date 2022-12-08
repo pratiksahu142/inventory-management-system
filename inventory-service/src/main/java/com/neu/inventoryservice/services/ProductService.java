@@ -27,4 +27,9 @@ public class ProductService {
   public Product addProduct(Product product) {
     return restTemplate.postForObject("http://product-service/product/", product, Product.class);
   }
+
+  public void updateProduct(Product product) {
+    restTemplate.put("http://product-service/product/"+product.getId(), product);
+  }
+
 }

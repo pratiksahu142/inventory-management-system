@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -150,6 +151,32 @@ public class InventoryServiceController {
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
+  @PutMapping("/{inventoryId}/products/{productId}")
+  public ResponseEntity<InventoryLookup> updateProductInInventory(
+      @PathVariable("inventoryId") Integer inventoryId,
+      @PathVariable("productId") Integer productId,
+      @RequestHeader("username") String username,
+      @RequestHeader("password") String password,
+      @RequestBody InventoryLookup reqInventoryLookup) {
+    boolean isUserLoggedIn = isUserLoggedIn(username, password);
+    if (!isUserLoggedIn) {
+      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    Optional<Inventory> inventoryOptional = inventoryRepository.findById(inventoryId);
+    if (inventoryOptional.isPresent()) {
+      List<InventoryLookup> inventoryLookups = inventoryLookupRepository.findInventoryLookupsByInventoryIdEquals(
+          inventoryId);
+      for (InventoryLookup inventoryLookup : inventoryLookups) {
+        if (inventoryLookup.getProductId().equals(productId)) {
+          inventoryLookup.setQuantity(reqInventoryLookup.getQuantity());
+          inventoryLookupRepository.save(inventoryLookup);
+          return new ResponseEntity<>(inventoryLookupRepository.save(inventoryLookup), HttpStatus.ACCEPTED);
+        }
+      }
+    }
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+  }
+
   @PostMapping("/{inventoryId}/products/")
   public ResponseEntity<InventoryLookup> addProductToInventory(
       @PathVariable("inventoryId") Integer inventoryId,
@@ -201,6 +228,9 @@ public class InventoryServiceController {
       for (Map.Entry<Product, Integer> productInInventory : productsInInventory.entrySet()) {
         Product product = productInInventory.getKey();
         fullProducts.add(FullProduct.builder()
+            .iid(inventoryId)
+            .pid(product.getId())
+            .cid(product.getCategoryId())
             .productName(product.getName())
             .inventoryName(inventoryOptional.get().getName())
             .categoryName(categoriesMap.get(product.getCategoryId()))
@@ -287,29 +317,17 @@ public class InventoryServiceController {
     }
   }
 
-  @PostMapping("/{inventoryId}/products/add/")
-  public ResponseEntity<Product> addFullProduct(@PathVariable("inventoryId") Integer inventoryId,
-      @RequestBody FullProduct fullProduct, @RequestHeader("username") String username,
+  @PutMapping("/products/{productId}")
+  public ResponseEntity<Product> updateProduct(@PathVariable("productId") Integer productId,
+      @RequestBody Product product, @RequestHeader("username") String username,
       @RequestHeader("password") String password) {
     boolean isUserLoggedIn = isUserLoggedIn(username, password);
     if (!isUserLoggedIn) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
-    List<Category> categories = categoryService.getAllCategoriesByName(
-        fullProduct.getCategoryName()).getCategories();
-    Category category;
-    if (categories.size() == 0) {
-      category = categoryService.addCategory(
-          Category.builder().name(fullProduct.getCategoryName()).build());
-    } else {
-      category = categories.get(0);
-    }
-    Product product = productService.addProduct(Product.builder().price(fullProduct.getPrice())
-        .name(fullProduct.getProductName()).description(fullProduct.getDescription())
-        .categoryId(category.getId()).build());
-    inventoryLookupRepository.save(InventoryLookup.builder().inventoryId(inventoryId).productId(
-        product.getId()).quantity(fullProduct.getQuantity()).build());
-    return new ResponseEntity<>(product, HttpStatus.CREATED);
+    product.setId(productId);
+    productService.updateProduct(product);
+    return new ResponseEntity<>(productService.getProductById(productId), HttpStatus.OK);
   }
 
   private boolean isUserLoggedIn(String username, String password) {

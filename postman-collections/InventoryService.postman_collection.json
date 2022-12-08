@@ -388,7 +388,7 @@
 			"response": []
 		},
 		{
-			"name": "addFullProduct",
+			"name": "updateProduct",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -456,6 +456,49 @@
 					"path": [
 						"inventory",
 						"products",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updateProductInInventory",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "username",
+						"value": "admin",
+						"type": "text"
+					},
+					{
+						"key": "password",
+						"value": "admin",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"quantity\": 455\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/inventory/1/products/1/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"inventory",
+						"1",
+						"products",
+						"1",
 						""
 					]
 				}

@@ -15,6 +15,12 @@ import lombok.Setter;
 @Builder(toBuilder = true)
 public class FullProduct {
 
+  private int pid;
+
+  private int cid;
+
+  private int iid;
+
   private String categoryName;
 
   private String inventoryName;
