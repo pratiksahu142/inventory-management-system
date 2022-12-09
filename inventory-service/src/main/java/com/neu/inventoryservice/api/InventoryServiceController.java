@@ -154,7 +154,7 @@ public class InventoryServiceController {
     if (inventoryOptional.isPresent()) {
       Product product = productService.getProductById(inventoryLookup.getProductId());
       if (product != null && product.getQuantity() >= inventoryLookup.getQuantity()) {
-        product.setQuantity(product.getQuantity() - inventoryLookup.getQuantity());
+        product.setQuantity(-1 * inventoryLookup.getQuantity());
         productService.updateProduct(product);
         InventoryLookup newInventory;
         if (inventoryLookupFromDb != null) {
@@ -230,6 +230,7 @@ public class InventoryServiceController {
       newProduct.setCategoryId(product.getCategoryId());
       newProduct.setPrice(product.getPrice());
       newProduct.setDescription(product.getDescription());
+      newProduct.setQuantity(product.getQuantity());
       newProduct = productService.addProduct(newProduct);
       return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
     } catch (Exception e) {

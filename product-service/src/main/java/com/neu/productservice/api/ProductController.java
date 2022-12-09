@@ -73,6 +73,7 @@ public class ProductController {
               .categoryId(product.getCategoryId())
               .price(product.getPrice())
               .description(product.getDescription())
+              .quantity(product.getQuantity())
               .build());
       return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
     } catch (Exception e) {
