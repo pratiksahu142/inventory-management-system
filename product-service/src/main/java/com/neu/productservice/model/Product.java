@@ -41,6 +41,9 @@ public class Product {
   @Column(name = "description")
   private String description;
 
+  @Column(name = "quantity")
+  private Integer quantity;
+
   public Integer getId() {
     return id;
   }
@@ -49,11 +52,11 @@ public class Product {
     this.id = id;
   }
 
-  public int getCategoryId() {
+  public Integer getCategoryId() {
     return categoryId;
   }
 
-  public void setCategoryId(int categoryId) {
+  public void setCategoryId(Integer categoryId) {
     this.categoryId = categoryId;
   }
 
@@ -81,14 +84,11 @@ public class Product {
     this.description = description;
   }
 
-  @Override
-  public String toString() {
-    return "Product{" +
-        "productId=" + id +
-        ", categoryId=" + categoryId +
-        ", name='" + name + '\'' +
-        ", price=" + price +
-        ", description='" + description + '\'' +
-        '}';
+  public Integer getQuantity() {
+    return quantity;
+  }
+
+  public void setQuantity(Integer quantity) {
+    this.quantity = quantity;
   }
 }

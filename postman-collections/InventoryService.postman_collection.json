@@ -126,7 +126,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"productId\": 5,\n    \"quantity\": 700\n}",
+					"raw": "{\n    \"productId\": 1,\n    \"quantity\": 900\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -390,7 +390,7 @@
 		{
 			"name": "updateProduct",
 			"request": {
-				"method": "POST",
+				"method": "PUT",
 				"header": [
 					{
 						"key": "username",
@@ -405,7 +405,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n        \"categoryName\": \"Veggies\",\n        \"inventoryName\": \"Amazon\",\n        \"productName\": \"Tomato\",\n        \"price\": 4,\n        \"quantity\": 1600,\n        \"description\": \"Tomato\"\n    }",
+					"raw": "{\n    \"categoryId\": 1,\n    \"name\": \"ToothPaste\",\n    \"price\": 22,\n    \"description\": \"Toothpaste\",\n    \"quantity\": 10000\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -413,7 +413,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8081/inventory/1/products/add/",
+					"raw": "http://localhost:8081/inventory/products/1/",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -421,9 +421,8 @@
 					"port": "8081",
 					"path": [
 						"inventory",
-						"1",
 						"products",
-						"add",
+						"1",
 						""
 					]
 				}
@@ -463,7 +462,7 @@
 			"response": []
 		},
 		{
-			"name": "updateProductInInventory",
+			"name": "removeProductFromInventory",
 			"request": {
 				"method": "PUT",
 				"header": [
@@ -480,7 +479,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"quantity\": 455\n}",
+					"raw": "{\n    \"quantity\": 150\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -497,6 +496,39 @@
 					"path": [
 						"inventory",
 						"1",
+						"products",
+						"1",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getProduct",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "username",
+						"value": "admin",
+						"type": "text"
+					},
+					{
+						"key": "password",
+						"value": "admin",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8081/inventory/products/1/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"inventory",
 						"products",
 						"1",
 						""

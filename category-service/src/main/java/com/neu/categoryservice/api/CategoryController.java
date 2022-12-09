@@ -31,7 +31,8 @@ public class CategoryController {
   }
 
   @RequestMapping("/find/{categoryName}")
-  public ResponseEntity<Categories> getCategoryByName(@PathVariable("categoryName") String categoryName) {
+  public ResponseEntity<Categories> getCategoryByName(
+      @PathVariable("categoryName") String categoryName) {
     List<Category> categories = new ArrayList<>(categoryRepository.findAllByName(categoryName));
     if (categories.size() > 0) {
       return new ResponseEntity<>(new Categories(categories), HttpStatus.OK);

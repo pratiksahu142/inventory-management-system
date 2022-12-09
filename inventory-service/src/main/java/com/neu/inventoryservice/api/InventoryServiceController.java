@@ -110,6 +110,24 @@ public class InventoryServiceController {
         .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
+  @RequestMapping("/")
+  public ResponseEntity<List<Inventory>> getAllInventories(
+      @RequestHeader("username") String username,
+      @RequestHeader("password") String password) {
+    boolean isUserLoggedIn = isUserLoggedIn(username, password);
+    if (!isUserLoggedIn) {
+      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    List<Inventory> inventories = new ArrayList<>();
+
+    inventoryRepository.findAll().forEach(inventories::add);
+    if (inventories.size() > 0) {
+      return new ResponseEntity<>(inventories, HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+  }
+
   @DeleteMapping("/{inventoryId}")
   public ResponseEntity<HttpStatus> deleteInventory(
       @PathVariable("inventoryId") Integer inventoryId,
@@ -143,6 +161,9 @@ public class InventoryServiceController {
           inventoryId);
       for (InventoryLookup inventoryLookup : inventoryLookups) {
         if (inventoryLookup.getProductId().equals(productId)) {
+          Product product = productService.getProductById(productId);
+          product.setQuantity(product.getQuantity() + inventoryLookup.getQuantity());
+          productService.updateProduct(product);
           inventoryLookupRepository.deleteById(inventoryLookup.getId());
           return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
@@ -152,7 +173,7 @@ public class InventoryServiceController {
   }
 
   @PutMapping("/{inventoryId}/products/{productId}")
-  public ResponseEntity<InventoryLookup> updateProductInInventory(
+  public ResponseEntity<InventoryLookup> removeProductFromInventory(
       @PathVariable("inventoryId") Integer inventoryId,
       @PathVariable("productId") Integer productId,
       @RequestHeader("username") String username,
@@ -168,9 +189,18 @@ public class InventoryServiceController {
           inventoryId);
       for (InventoryLookup inventoryLookup : inventoryLookups) {
         if (inventoryLookup.getProductId().equals(productId)) {
-          inventoryLookup.setQuantity(reqInventoryLookup.getQuantity());
-          inventoryLookupRepository.save(inventoryLookup);
-          return new ResponseEntity<>(inventoryLookupRepository.save(inventoryLookup), HttpStatus.ACCEPTED);
+          inventoryLookup.setQuantity(
+              inventoryLookup.getQuantity() - reqInventoryLookup.getQuantity());
+          if (inventoryLookup.getQuantity() < 1) {
+            inventoryLookupRepository.deleteById(inventoryLookup.getId());
+          } else {
+            inventoryLookupRepository.save(inventoryLookup);
+          }
+          Product product = productService.getProductById(productId);
+          product.setQuantity(product.getQuantity() + reqInventoryLookup.getQuantity());
+          productService.updateProduct(product);
+          return new ResponseEntity<>(inventoryLookupRepository.save(inventoryLookup),
+              HttpStatus.ACCEPTED);
         }
       }
     }
@@ -188,14 +218,42 @@ public class InventoryServiceController {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
     Optional<Inventory> inventoryOptional = inventoryRepository.findById(inventoryId);
+    List<InventoryLookup> inventoryLUs = inventoryLookupRepository.findInventoryLookupsByInventoryIdEquals(
+        inventoryId);
+    InventoryLookup inventoryLookupFromDb = null;
+    for (InventoryLookup inventoryLookup1 : inventoryLUs) {
+      if (inventoryLookup1.getProductId().equals(inventoryLookup.getProductId())) {
+        inventoryLookupFromDb = inventoryLookup1;
+        break;
+      }
+    }
     if (inventoryOptional.isPresent()) {
-      InventoryLookup newInventory = inventoryLookupRepository
-          .save(InventoryLookup.builder()
-              .inventoryId(inventoryId)
-              .productId(inventoryLookup.getProductId())
-              .quantity(inventoryLookup.getQuantity())
-              .build());
-      return new ResponseEntity<>(newInventory, HttpStatus.CREATED);
+      Product product = productService.getProductById(inventoryLookup.getProductId());
+      if (product != null && product.getQuantity() >= inventoryLookup.getQuantity()) {
+        product.setQuantity(product.getQuantity() - inventoryLookup.getQuantity());
+        productService.updateProduct(product);
+        InventoryLookup newInventory;
+        if (inventoryLookupFromDb != null) {
+          newInventory = inventoryLookupRepository
+              .save(InventoryLookup.builder()
+                  .id(inventoryLookupFromDb.getId())
+                  .inventoryId(inventoryId)
+                  .productId(inventoryLookup.getProductId())
+                  .quantity(inventoryLookup.getQuantity() + inventoryLookupFromDb.getQuantity())
+                  .build());
+        } else {
+          newInventory = inventoryLookupRepository
+              .save(InventoryLookup.builder()
+                  .inventoryId(inventoryId)
+                  .productId(inventoryLookup.getProductId())
+                  .quantity(inventoryLookup.getQuantity())
+                  .build());
+        }
+
+        return new ResponseEntity<>(newInventory, HttpStatus.CREATED);
+      } else {
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     } else {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -315,6 +373,17 @@ public class InventoryServiceController {
     } else {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+  }
+
+  @RequestMapping("/products/{productId}")
+  public ResponseEntity<Product> getProduct(@PathVariable("productId") Integer productId,
+      @RequestHeader("username") String username,
+      @RequestHeader("password") String password) {
+    boolean isUserLoggedIn = isUserLoggedIn(username, password);
+    if (!isUserLoggedIn) {
+      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    return new ResponseEntity<>(productService.getProductById(productId), HttpStatus.OK);
   }
 
   @PutMapping("/products/{productId}")

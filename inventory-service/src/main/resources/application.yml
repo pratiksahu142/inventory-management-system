@@ -70,11 +70,11 @@ resilience4j:
         exponentialBackoffMultiplier: 2
 
 
-  timelimiter:
-    instances:
-      categoryService:
-        timeoutDuration: 2s
-        cancelRunningFuture: true
+#  timelimiter:
+#    instances:
+#      categoryService:
+#        timeoutDuration: 2s
+#        cancelRunningFuture: true
 
 
 

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @EqualsAndHashCode
@@ -24,6 +23,8 @@ public class Product {
 
   private String description;
 
+  private Integer quantity;
+
   public Product() {
   }
 
@@ -40,6 +41,10 @@ public class Product {
   }
 
   public void setCategoryId(int categoryId) {
+    this.categoryId = categoryId;
+  }
+
+  public void setCategoryId(Integer categoryId) {
     this.categoryId = categoryId;
   }
 
@@ -67,4 +72,11 @@ public class Product {
     this.description = description;
   }
 
+  public Integer getQuantity() {
+    return quantity;
+  }
+
+  public void setQuantity(Integer quantity) {
+    this.quantity = quantity;
+  }
 }

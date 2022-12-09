@@ -23,7 +23,8 @@ public class CategoryService {
   }
 
   public Categories getAllCategoriesByName(String name) {
-    return restTemplate.getForObject("http://category-service/category/find/"+name, Categories.class);
+    return restTemplate.getForObject("http://category-service/category/find/" + name,
+        Categories.class);
   }
 
 

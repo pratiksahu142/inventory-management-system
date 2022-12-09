@@ -6,6 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface ProductRepository extends CrudRepository<Product, Integer> {
 
-//  List<Product> findByInventoryId(Integer inventoryId);
+  //  List<Product> findByInventoryId(Integer inventoryId);
   List<Product> findAllByName(String name);
 }

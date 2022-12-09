@@ -92,6 +92,7 @@ public class ProductController {
       oldProduct.setPrice(product.getPrice());
       oldProduct.setCategoryId(product.getCategoryId());
       oldProduct.setDescription(product.getDescription());
+      oldProduct.setQuantity(product.getQuantity());
       return new ResponseEntity<>(productRepository.save(oldProduct), HttpStatus.OK);
     } else {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);

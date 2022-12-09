@@ -29,7 +29,7 @@ public class ProductService {
   }
 
   public void updateProduct(Product product) {
-    restTemplate.put("http://product-service/product/"+product.getId(), product);
+    restTemplate.put("http://product-service/product/" + product.getId(), product);
   }
 
 }
