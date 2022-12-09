@@ -1,0 +1,14 @@
+/Users/pratik/IdeaProjects/inventory-management-system/Inventory-Management-System/inventory-service/src/main/java/com/neu/inventoryservice/services/CategoryService.java
+/Users/pratik/IdeaProjects/inventory-management-system/Inventory-Management-System/inventory-service/src/main/java/com/neu/inventoryservice/model/InventoryLookup.java
+/Users/pratik/IdeaProjects/inventory-management-system/Inventory-Management-System/inventory-service/src/main/java/com/neu/inventoryservice/InventoryServiceApp.java
+/Users/pratik/IdeaProjects/inventory-management-system/Inventory-Management-System/inventory-service/src/main/java/com/neu/inventoryservice/api/InventoryServiceController.java
+/Users/pratik/IdeaProjects/inventory-management-system/Inventory-Management-System/inventory-service/src/main/java/com/neu/inventoryservice/config/SwaggerConfig.java
+/Users/pratik/IdeaProjects/inventory-management-system/Inventory-Management-System/inventory-service/src/main/java/com/neu/inventoryservice/model/Categories.java
+/Users/pratik/IdeaProjects/inventory-management-system/Inventory-Management-System/inventory-service/src/main/java/com/neu/inventoryservice/dao/InventoryLookupRepository.java
+/Users/pratik/IdeaProjects/inventory-management-system/Inventory-Management-System/inventory-service/src/main/java/com/neu/inventoryservice/model/Products.java
+/Users/pratik/IdeaProjects/inventory-management-system/Inventory-Management-System/inventory-service/src/main/java/com/neu/inventoryservice/model/Product.java
+/Users/pratik/IdeaProjects/inventory-management-system/Inventory-Management-System/inventory-service/src/main/java/com/neu/inventoryservice/model/Category.java
+/Users/pratik/IdeaProjects/inventory-management-system/Inventory-Management-System/inventory-service/src/main/java/com/neu/inventoryservice/services/ProductService.java
+/Users/pratik/IdeaProjects/inventory-management-system/Inventory-Management-System/inventory-service/src/main/java/com/neu/inventoryservice/dao/InventoryRepository.java
+/Users/pratik/IdeaProjects/inventory-management-system/Inventory-Management-System/inventory-service/src/main/java/com/neu/inventoryservice/model/Inventory.java
+/Users/pratik/IdeaProjects/inventory-management-system/Inventory-Management-System/inventory-service/src/main/java/com/neu/inventoryservice/model/FullProduct.java

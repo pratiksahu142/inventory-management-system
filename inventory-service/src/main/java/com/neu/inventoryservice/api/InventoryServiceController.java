@@ -113,7 +113,7 @@ public class InventoryServiceController {
   }
 
   @PutMapping("/{inventoryId}/products/{productId}")
-  public ResponseEntity<InventoryLookup> removeProductFromInventory(
+  public ResponseEntity<InventoryLookup> updateProductInInventory(
       @PathVariable("inventoryId") Integer inventoryId,
       @PathVariable("productId") Integer productId,
       @RequestBody InventoryLookup reqInventoryLookup) {
@@ -124,16 +124,20 @@ public class InventoryServiceController {
             inventoryId);
         for (InventoryLookup inventoryLookup : inventoryLookups) {
           if (inventoryLookup.getProductId().equals(productId)) {
-            inventoryLookup.setQuantity(
-                inventoryLookup.getQuantity() - reqInventoryLookup.getQuantity());
-            if (inventoryLookup.getQuantity() < 1) {
+
+            Product product = productService.getProductById(productId);
+            if (reqInventoryLookup.getQuantity() > product.getQuantity()) {
+              return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            } else if (reqInventoryLookup.getQuantity() == 0) {
               inventoryLookupRepository.deleteById(inventoryLookup.getId());
+              return new ResponseEntity<>(HttpStatus.ACCEPTED);
             } else {
+              int diff = inventoryLookup.getQuantity() - reqInventoryLookup.getQuantity();
+              product.setQuantity(diff);
+              productService.updateProduct(product);
+              inventoryLookup.setQuantity(reqInventoryLookup.getQuantity());
               inventoryLookupRepository.save(inventoryLookup);
             }
-            Product product = productService.getProductById(productId);
-            product.setQuantity(reqInventoryLookup.getQuantity());
-            productService.updateProduct(product);
             return new ResponseEntity<>(inventoryLookupRepository.save(inventoryLookup),
                 HttpStatus.ACCEPTED);
           }
