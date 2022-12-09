@@ -81,7 +81,7 @@ public class InventoryServiceController {
       @PathVariable("inventoryId") Integer inventoryId) {
     try {
       inventoryRepository.deleteById(inventoryId);
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+      return new ResponseEntity<>(HttpStatus.ACCEPTED);
     } catch (Exception e) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -91,19 +91,23 @@ public class InventoryServiceController {
   public ResponseEntity<InventoryLookup> deleteProductFromInventory(
       @PathVariable("inventoryId") Integer inventoryId,
       @PathVariable("productId") Integer productId) {
-    Optional<Inventory> inventoryOptional = inventoryRepository.findById(inventoryId);
-    if (inventoryOptional.isPresent()) {
-      List<InventoryLookup> inventoryLookups = inventoryLookupRepository.findInventoryLookupsByInventoryIdEquals(
-          inventoryId);
-      for (InventoryLookup inventoryLookup : inventoryLookups) {
-        if (inventoryLookup.getProductId().equals(productId)) {
-          Product product = productService.getProductById(productId);
-          product.setQuantity(product.getQuantity() + inventoryLookup.getQuantity());
-          productService.updateProduct(product);
-          inventoryLookupRepository.deleteById(inventoryLookup.getId());
-          return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    try {
+      Optional<Inventory> inventoryOptional = inventoryRepository.findById(inventoryId);
+      if (inventoryOptional.isPresent()) {
+        List<InventoryLookup> inventoryLookups = inventoryLookupRepository.findInventoryLookupsByInventoryIdEquals(
+            inventoryId);
+        for (InventoryLookup inventoryLookup : inventoryLookups) {
+          if (inventoryLookup.getProductId().equals(productId)) {
+            Product product = productService.getProductById(productId);
+            product.setQuantity(inventoryLookup.getQuantity());
+            productService.updateProduct(product);
+            inventoryLookupRepository.deleteById(inventoryLookup.getId());
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+          }
         }
       }
+    } catch (Exception e) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
@@ -113,26 +117,30 @@ public class InventoryServiceController {
       @PathVariable("inventoryId") Integer inventoryId,
       @PathVariable("productId") Integer productId,
       @RequestBody InventoryLookup reqInventoryLookup) {
-    Optional<Inventory> inventoryOptional = inventoryRepository.findById(inventoryId);
-    if (inventoryOptional.isPresent()) {
-      List<InventoryLookup> inventoryLookups = inventoryLookupRepository.findInventoryLookupsByInventoryIdEquals(
-          inventoryId);
-      for (InventoryLookup inventoryLookup : inventoryLookups) {
-        if (inventoryLookup.getProductId().equals(productId)) {
-          inventoryLookup.setQuantity(
-              inventoryLookup.getQuantity() - reqInventoryLookup.getQuantity());
-          if (inventoryLookup.getQuantity() < 1) {
-            inventoryLookupRepository.deleteById(inventoryLookup.getId());
-          } else {
-            inventoryLookupRepository.save(inventoryLookup);
+    try {
+      Optional<Inventory> inventoryOptional = inventoryRepository.findById(inventoryId);
+      if (inventoryOptional.isPresent()) {
+        List<InventoryLookup> inventoryLookups = inventoryLookupRepository.findInventoryLookupsByInventoryIdEquals(
+            inventoryId);
+        for (InventoryLookup inventoryLookup : inventoryLookups) {
+          if (inventoryLookup.getProductId().equals(productId)) {
+            inventoryLookup.setQuantity(
+                inventoryLookup.getQuantity() - reqInventoryLookup.getQuantity());
+            if (inventoryLookup.getQuantity() < 1) {
+              inventoryLookupRepository.deleteById(inventoryLookup.getId());
+            } else {
+              inventoryLookupRepository.save(inventoryLookup);
+            }
+            Product product = productService.getProductById(productId);
+            product.setQuantity(reqInventoryLookup.getQuantity());
+            productService.updateProduct(product);
+            return new ResponseEntity<>(inventoryLookupRepository.save(inventoryLookup),
+                HttpStatus.ACCEPTED);
           }
-          Product product = productService.getProductById(productId);
-          product.setQuantity(product.getQuantity() + reqInventoryLookup.getQuantity());
-          productService.updateProduct(product);
-          return new ResponseEntity<>(inventoryLookupRepository.save(inventoryLookup),
-              HttpStatus.ACCEPTED);
         }
       }
+    } catch (Exception e) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
@@ -141,83 +149,91 @@ public class InventoryServiceController {
   public ResponseEntity<InventoryLookup> addProductToInventory(
       @PathVariable("inventoryId") Integer inventoryId,
       @RequestBody InventoryLookup inventoryLookup) {
-    Optional<Inventory> inventoryOptional = inventoryRepository.findById(inventoryId);
-    List<InventoryLookup> inventoryLUs = inventoryLookupRepository.findInventoryLookupsByInventoryIdEquals(
-        inventoryId);
+    Optional<Inventory> inventoryOptional;
     InventoryLookup inventoryLookupFromDb = null;
-    for (InventoryLookup inventoryLookup1 : inventoryLUs) {
-      if (inventoryLookup1.getProductId().equals(inventoryLookup.getProductId())) {
-        inventoryLookupFromDb = inventoryLookup1;
-        break;
-      }
-    }
-    if (inventoryOptional.isPresent()) {
-      Product product = productService.getProductById(inventoryLookup.getProductId());
-      if (product != null && product.getQuantity() >= inventoryLookup.getQuantity()) {
-        product.setQuantity(-1 * inventoryLookup.getQuantity());
-        productService.updateProduct(product);
-        InventoryLookup newInventory;
-        if (inventoryLookupFromDb != null) {
-          newInventory = inventoryLookupRepository
-              .save(InventoryLookup.builder()
-                  .id(inventoryLookupFromDb.getId())
-                  .inventoryId(inventoryId)
-                  .productId(inventoryLookup.getProductId())
-                  .quantity(inventoryLookup.getQuantity() + inventoryLookupFromDb.getQuantity())
-                  .build());
-        } else {
-          newInventory = inventoryLookupRepository
-              .save(InventoryLookup.builder()
-                  .inventoryId(inventoryId)
-                  .productId(inventoryLookup.getProductId())
-                  .quantity(inventoryLookup.getQuantity())
-                  .build());
+    try {
+      inventoryOptional = inventoryRepository.findById(inventoryId);
+      List<InventoryLookup> inventoryLUs = inventoryLookupRepository.findInventoryLookupsByInventoryIdEquals(
+          inventoryId);
+      for (InventoryLookup inventoryLookup1 : inventoryLUs) {
+        if (inventoryLookup1.getProductId().equals(inventoryLookup.getProductId())) {
+          inventoryLookupFromDb = inventoryLookup1;
+          break;
         }
-
-        return new ResponseEntity<>(newInventory, HttpStatus.CREATED);
-      } else {
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
       }
-    } else {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      if (inventoryOptional.isPresent()) {
+        Product product = productService.getProductById(inventoryLookup.getProductId());
+        if (product != null && product.getQuantity() >= inventoryLookup.getQuantity()) {
+          product.setQuantity(-1 * inventoryLookup.getQuantity());
+          productService.updateProduct(product);
+          InventoryLookup newInventory;
+          if (inventoryLookupFromDb != null) {
+            newInventory = inventoryLookupRepository
+                .save(InventoryLookup.builder()
+                    .id(inventoryLookupFromDb.getId())
+                    .inventoryId(inventoryId)
+                    .productId(inventoryLookup.getProductId())
+                    .quantity(inventoryLookup.getQuantity() + inventoryLookupFromDb.getQuantity())
+                    .build());
+          } else {
+            newInventory = inventoryLookupRepository
+                .save(InventoryLookup.builder()
+                    .inventoryId(inventoryId)
+                    .productId(inventoryLookup.getProductId())
+                    .quantity(inventoryLookup.getQuantity())
+                    .build());
+          }
+          return new ResponseEntity<>(newInventory, HttpStatus.CREATED);
+        } else {
+          return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+      } else {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      }
+    } catch (Exception e) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @RequestMapping("/{inventoryId}/products")
   public ResponseEntity<List<FullProduct>> getAllProductsInInventory(
       @PathVariable("inventoryId") Integer inventoryId) {
-    Optional<Inventory> inventoryOptional = inventoryRepository.findById(inventoryId);
-    if (inventoryOptional.isPresent()) {
-      List<InventoryLookup> inventoryLookups =
-          inventoryLookupRepository.findInventoryLookupsByInventoryIdEquals(inventoryId);
-      Map<Product, Integer> productsInInventory = new HashMap<>();
-      for (InventoryLookup inventoryLookup : inventoryLookups) {
-        productsInInventory.put(productService.getProductById(inventoryLookup.getProductId()),
-            inventoryLookup.getQuantity());
+    try {
+      Optional<Inventory> inventoryOptional = inventoryRepository.findById(inventoryId);
+      if (inventoryOptional.isPresent()) {
+        List<InventoryLookup> inventoryLookups =
+            inventoryLookupRepository.findInventoryLookupsByInventoryIdEquals(inventoryId);
+        Map<Product, Integer> productsInInventory = new HashMap<>();
+        for (InventoryLookup inventoryLookup : inventoryLookups) {
+          productsInInventory.put(productService.getProductById(inventoryLookup.getProductId()),
+              inventoryLookup.getQuantity());
+        }
+        List<Category> categories = categoryService.getAllCategories().getCategories();
+        Map<Integer, String> categoriesMap = new HashMap<>();
+        for (Category category : categories) {
+          categoriesMap.put(category.getId(), category.getName());
+        }
+        List<FullProduct> fullProducts = new ArrayList<>();
+        for (Map.Entry<Product, Integer> productInInventory : productsInInventory.entrySet()) {
+          Product product = productInInventory.getKey();
+          fullProducts.add(FullProduct.builder()
+              .iid(inventoryId)
+              .pid(product.getId())
+              .cid(product.getCategoryId())
+              .productName(product.getName())
+              .inventoryName(inventoryOptional.get().getName())
+              .categoryName(categoriesMap.get(product.getCategoryId()))
+              .quantity(productInInventory.getValue())
+              .price(product.getPrice())
+              .description(product.getDescription())
+              .build());
+        }
+        return new ResponseEntity<>(fullProducts, HttpStatus.OK);
+      } else {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
-      List<Category> categories = categoryService.getAllCategories().getCategories();
-      Map<Integer, String> categoriesMap = new HashMap<>();
-      for (Category category : categories) {
-        categoriesMap.put(category.getId(), category.getName());
-      }
-      List<FullProduct> fullProducts = new ArrayList<>();
-      for (Map.Entry<Product, Integer> productInInventory : productsInInventory.entrySet()) {
-        Product product = productInInventory.getKey();
-        fullProducts.add(FullProduct.builder()
-            .iid(inventoryId)
-            .pid(product.getId())
-            .cid(product.getCategoryId())
-            .productName(product.getName())
-            .inventoryName(inventoryOptional.get().getName())
-            .categoryName(categoriesMap.get(product.getCategoryId()))
-            .quantity(productInInventory.getValue())
-            .price(product.getPrice())
-            .description(product.getDescription())
-            .build());
-      }
-      return new ResponseEntity<>(fullProducts, HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    } catch (Exception e) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -234,7 +250,6 @@ public class InventoryServiceController {
       newProduct = productService.addProduct(newProduct);
       return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
     } catch (Exception e) {
-      System.out.println(e);
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -247,28 +262,36 @@ public class InventoryServiceController {
       newCategory = categoryService.addCategory(newCategory);
       return new ResponseEntity<>(newCategory, HttpStatus.CREATED);
     } catch (Exception e) {
-      System.out.println(e);
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @RequestMapping("/category/")
   public ResponseEntity<Categories> getAllCategories() {
-    List<Category> categories = new ArrayList<>(categoryService.getAllCategories().getCategories());
-    if (categories.size() > 0) {
-      return new ResponseEntity<>(new Categories(categories), HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    try {
+      List<Category> categories = new ArrayList<>(
+          categoryService.getAllCategories().getCategories());
+      if (categories.size() > 0) {
+        return new ResponseEntity<>(new Categories(categories), HttpStatus.OK);
+      } else {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      }
+    } catch (Exception e) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @RequestMapping("/products/")
   public ResponseEntity<Products> getAllProducts() {
-    List<Product> products = new ArrayList<>(productService.getAllProducts().getProducts());
-    if (products.size() > 0) {
-      return new ResponseEntity<>(new Products(products), HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    try {
+      List<Product> products = new ArrayList<>(productService.getAllProducts().getProducts());
+      if (products.size() > 0) {
+        return new ResponseEntity<>(new Products(products), HttpStatus.OK);
+      } else {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      }
+    } catch (Exception e) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
