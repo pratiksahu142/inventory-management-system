@@ -10,18 +10,7 @@
 			"name": "createInventory",
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "text"
-					},
-					{
-						"key": "password",
-						"value": "admin",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"name\": \"amazon\"\n}",
@@ -50,18 +39,7 @@
 			"name": "getInventoryById",
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "text"
-					},
-					{
-						"key": "password",
-						"value": "admin",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
 					"raw": "http://localhost:8081/inventory/1",
 					"protocol": "http",
@@ -81,18 +59,7 @@
 			"name": "deleteInventory",
 			"request": {
 				"method": "DELETE",
-				"header": [
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "text"
-					},
-					{
-						"key": "password",
-						"value": "admin",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
 					"raw": "http://localhost:8081/inventory/4",
 					"protocol": "http",
@@ -112,18 +79,7 @@
 			"name": "addProductToInventory",
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "text"
-					},
-					{
-						"key": "password",
-						"value": "admin",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"productId\": 1,\n    \"quantity\": 900\n}",
@@ -154,18 +110,7 @@
 			"name": "getAllProductsInInventory",
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "text"
-					},
-					{
-						"key": "password",
-						"value": "admin",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
 					"raw": "http://localhost:8081/inventory/1/products/",
 					"protocol": "http",
@@ -187,18 +132,7 @@
 			"name": "deleteProductFromInventory",
 			"request": {
 				"method": "DELETE",
-				"header": [
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "text"
-					},
-					{
-						"key": "password",
-						"value": "admin",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
 					"raw": "http://localhost:8081/inventory/1/products/1",
 					"protocol": "http",
@@ -220,18 +154,7 @@
 			"name": "addProduct",
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "text"
-					},
-					{
-						"key": "password",
-						"value": "admin",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"categoryId\": 4,\n    \"name\": \"Marker\",\n    \"price\": 2,\n    \"description\": \"Marker\"\n}",
@@ -261,18 +184,7 @@
 			"name": "addCategory",
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "text"
-					},
-					{
-						"key": "password",
-						"value": "admin",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"name\": \"Electronics\"\n}",
@@ -302,18 +214,7 @@
 			"name": "getAllCategories",
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "text"
-					},
-					{
-						"key": "password",
-						"value": "admin",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
 					"raw": "http://localhost:8081/inventory/category/",
 					"protocol": "http",
@@ -331,78 +232,10 @@
 			"response": []
 		},
 		{
-			"name": "login",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "text"
-					},
-					{
-						"key": "password",
-						"value": "admin",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:8081/inventory/login",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8081",
-					"path": [
-						"inventory",
-						"login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "logout",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:8081/inventory/logout",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8081",
-					"path": [
-						"inventory",
-						"logout"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "updateProduct",
 			"request": {
 				"method": "PUT",
-				"header": [
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "text"
-					},
-					{
-						"key": "password",
-						"value": "admin",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"categoryId\": 1,\n    \"name\": \"ToothPaste\",\n    \"price\": 22,\n    \"description\": \"Toothpaste\",\n    \"quantity\": 10000\n}",
@@ -433,18 +266,7 @@
 			"name": "getAllProducts",
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "text"
-					},
-					{
-						"key": "password",
-						"value": "admin",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
 					"raw": "http://localhost:8081/inventory/products/",
 					"protocol": "http",
@@ -465,18 +287,7 @@
 			"name": "removeProductFromInventory",
 			"request": {
 				"method": "PUT",
-				"header": [
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "text"
-					},
-					{
-						"key": "password",
-						"value": "admin",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"quantity\": 150\n}",
@@ -508,18 +319,7 @@
 			"name": "getProduct",
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "text"
-					},
-					{
-						"key": "password",
-						"value": "admin",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
 					"raw": "http://localhost:8081/inventory/products/1/",
 					"protocol": "http",

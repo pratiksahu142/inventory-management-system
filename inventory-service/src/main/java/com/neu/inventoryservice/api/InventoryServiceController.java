@@ -2,7 +2,6 @@ package com.neu.inventoryservice.api;
 
 import com.neu.inventoryservice.dao.InventoryLookupRepository;
 import com.neu.inventoryservice.dao.InventoryRepository;
-import com.neu.inventoryservice.dao.UserRepository;
 import com.neu.inventoryservice.model.Categories;
 import com.neu.inventoryservice.model.Category;
 import com.neu.inventoryservice.model.FullProduct;
@@ -10,7 +9,6 @@ import com.neu.inventoryservice.model.Inventory;
 import com.neu.inventoryservice.model.InventoryLookup;
 import com.neu.inventoryservice.model.Product;
 import com.neu.inventoryservice.model.Products;
-import com.neu.inventoryservice.model.User;
 import com.neu.inventoryservice.services.CategoryService;
 import com.neu.inventoryservice.services.ProductService;
 import java.util.ArrayList;
@@ -26,7 +24,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,51 +38,14 @@ public class InventoryServiceController {
   InventoryLookupRepository inventoryLookupRepository;
 
   @Autowired
-  UserRepository userRepository;
-
-  @Autowired
   ProductService productService;
 
   @Autowired
   CategoryService categoryService;
 
-  @PostMapping("/login")
-  public ResponseEntity login(@RequestHeader("username") String username,
-      @RequestHeader("password") String password) {
-    Optional<User> optUser = userRepository.findById(username);
-    if (optUser.isPresent()) {
-      User user = optUser.get();
-      if (!user.getPassword().equals(password)) {
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-      }
-      user.setLoggedIn(true);
-      userRepository.save(user);
-      return new ResponseEntity<>(HttpStatus.ACCEPTED);
-    }
-    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-  }
-
-  @PostMapping("/logout")
-  public ResponseEntity logout(@RequestHeader("username") String username) {
-    Optional<User> optUser = userRepository.findById(username);
-    if (optUser.isPresent()) {
-      User user = optUser.get();
-      user.setLoggedIn(false);
-      userRepository.save(user);
-      return new ResponseEntity<>(HttpStatus.ACCEPTED);
-    }
-    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-  }
-
   @PostMapping("/")
-  public ResponseEntity<Inventory> addInventory(@RequestBody Inventory inventory,
-      @RequestHeader("username") String username,
-      @RequestHeader("password") String password) {
+  public ResponseEntity<Inventory> addInventory(@RequestBody Inventory inventory) {
     try {
-      boolean isUserLoggedIn = isUserLoggedIn(username, password);
-      if (!isUserLoggedIn) {
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-      }
       Inventory newInventory = inventoryRepository
           .save(Inventory.builder()
               .name(inventory.getName())
@@ -98,26 +58,14 @@ public class InventoryServiceController {
 
   @RequestMapping("/{inventoryId}")
   public ResponseEntity<Inventory> getInventoryById(
-      @PathVariable("inventoryId") Integer inventoryId,
-      @RequestHeader("username") String username,
-      @RequestHeader("password") String password) {
-    boolean isUserLoggedIn = isUserLoggedIn(username, password);
-    if (!isUserLoggedIn) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
+      @PathVariable("inventoryId") Integer inventoryId) {
     Optional<Inventory> inventory = inventoryRepository.findById(inventoryId);
     return inventory.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
         .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
   @RequestMapping("/")
-  public ResponseEntity<List<Inventory>> getAllInventories(
-      @RequestHeader("username") String username,
-      @RequestHeader("password") String password) {
-    boolean isUserLoggedIn = isUserLoggedIn(username, password);
-    if (!isUserLoggedIn) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
+  public ResponseEntity<List<Inventory>> getAllInventories() {
     List<Inventory> inventories = new ArrayList<>();
 
     inventoryRepository.findAll().forEach(inventories::add);
@@ -130,14 +78,8 @@ public class InventoryServiceController {
 
   @DeleteMapping("/{inventoryId}")
   public ResponseEntity<HttpStatus> deleteInventory(
-      @PathVariable("inventoryId") Integer inventoryId,
-      @RequestHeader("username") String username,
-      @RequestHeader("password") String password) {
+      @PathVariable("inventoryId") Integer inventoryId) {
     try {
-      boolean isUserLoggedIn = isUserLoggedIn(username, password);
-      if (!isUserLoggedIn) {
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-      }
       inventoryRepository.deleteById(inventoryId);
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     } catch (Exception e) {
@@ -148,13 +90,7 @@ public class InventoryServiceController {
   @DeleteMapping("/{inventoryId}/products/{productId}")
   public ResponseEntity<InventoryLookup> deleteProductFromInventory(
       @PathVariable("inventoryId") Integer inventoryId,
-      @PathVariable("productId") Integer productId,
-      @RequestHeader("username") String username,
-      @RequestHeader("password") String password) {
-    boolean isUserLoggedIn = isUserLoggedIn(username, password);
-    if (!isUserLoggedIn) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
+      @PathVariable("productId") Integer productId) {
     Optional<Inventory> inventoryOptional = inventoryRepository.findById(inventoryId);
     if (inventoryOptional.isPresent()) {
       List<InventoryLookup> inventoryLookups = inventoryLookupRepository.findInventoryLookupsByInventoryIdEquals(
@@ -176,13 +112,7 @@ public class InventoryServiceController {
   public ResponseEntity<InventoryLookup> removeProductFromInventory(
       @PathVariable("inventoryId") Integer inventoryId,
       @PathVariable("productId") Integer productId,
-      @RequestHeader("username") String username,
-      @RequestHeader("password") String password,
       @RequestBody InventoryLookup reqInventoryLookup) {
-    boolean isUserLoggedIn = isUserLoggedIn(username, password);
-    if (!isUserLoggedIn) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
     Optional<Inventory> inventoryOptional = inventoryRepository.findById(inventoryId);
     if (inventoryOptional.isPresent()) {
       List<InventoryLookup> inventoryLookups = inventoryLookupRepository.findInventoryLookupsByInventoryIdEquals(
@@ -210,13 +140,7 @@ public class InventoryServiceController {
   @PostMapping("/{inventoryId}/products/")
   public ResponseEntity<InventoryLookup> addProductToInventory(
       @PathVariable("inventoryId") Integer inventoryId,
-      @RequestBody InventoryLookup inventoryLookup,
-      @RequestHeader("username") String username,
-      @RequestHeader("password") String password) {
-    boolean isUserLoggedIn = isUserLoggedIn(username, password);
-    if (!isUserLoggedIn) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
+      @RequestBody InventoryLookup inventoryLookup) {
     Optional<Inventory> inventoryOptional = inventoryRepository.findById(inventoryId);
     List<InventoryLookup> inventoryLUs = inventoryLookupRepository.findInventoryLookupsByInventoryIdEquals(
         inventoryId);
@@ -261,13 +185,7 @@ public class InventoryServiceController {
 
   @RequestMapping("/{inventoryId}/products")
   public ResponseEntity<List<FullProduct>> getAllProductsInInventory(
-      @PathVariable("inventoryId") Integer inventoryId,
-      @RequestHeader("username") String username,
-      @RequestHeader("password") String password) {
-    boolean isUserLoggedIn = isUserLoggedIn(username, password);
-    if (!isUserLoggedIn) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
+      @PathVariable("inventoryId") Integer inventoryId) {
     Optional<Inventory> inventoryOptional = inventoryRepository.findById(inventoryId);
     if (inventoryOptional.isPresent()) {
       List<InventoryLookup> inventoryLookups =
@@ -304,14 +222,8 @@ public class InventoryServiceController {
   }
 
   @PostMapping("/products/")
-  public ResponseEntity<Product> addProduct(@RequestBody Product product,
-      @RequestHeader("username") String username,
-      @RequestHeader("password") String password) {
+  public ResponseEntity<Product> addProduct(@RequestBody Product product) {
     try {
-      boolean isUserLoggedIn = isUserLoggedIn(username, password);
-      if (!isUserLoggedIn) {
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-      }
       Product newProduct = new Product();
       newProduct.setId(null);
       newProduct.setName(product.getName());
@@ -327,14 +239,8 @@ public class InventoryServiceController {
   }
 
   @PostMapping("/categories/")
-  public ResponseEntity<Category> addCategory(@RequestBody Category category,
-      @RequestHeader("username") String username,
-      @RequestHeader("password") String password) {
+  public ResponseEntity<Category> addCategory(@RequestBody Category category) {
     try {
-      boolean isUserLoggedIn = isUserLoggedIn(username, password);
-      if (!isUserLoggedIn) {
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-      }
       Category newCategory = new Category();
       newCategory.setName(category.getName());
       newCategory = categoryService.addCategory(newCategory);
@@ -346,12 +252,7 @@ public class InventoryServiceController {
   }
 
   @RequestMapping("/category/")
-  public ResponseEntity<Categories> getAllCategories(@RequestHeader("username") String username,
-      @RequestHeader("password") String password) {
-    boolean isUserLoggedIn = isUserLoggedIn(username, password);
-    if (!isUserLoggedIn) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
+  public ResponseEntity<Categories> getAllCategories() {
     List<Category> categories = new ArrayList<>(categoryService.getAllCategories().getCategories());
     if (categories.size() > 0) {
       return new ResponseEntity<>(new Categories(categories), HttpStatus.OK);
@@ -361,12 +262,7 @@ public class InventoryServiceController {
   }
 
   @RequestMapping("/products/")
-  public ResponseEntity<Products> getAllProducts(@RequestHeader("username") String username,
-      @RequestHeader("password") String password) {
-    boolean isUserLoggedIn = isUserLoggedIn(username, password);
-    if (!isUserLoggedIn) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
+  public ResponseEntity<Products> getAllProducts() {
     List<Product> products = new ArrayList<>(productService.getAllProducts().getProducts());
     if (products.size() > 0) {
       return new ResponseEntity<>(new Products(products), HttpStatus.OK);
@@ -376,35 +272,15 @@ public class InventoryServiceController {
   }
 
   @RequestMapping("/products/{productId}")
-  public ResponseEntity<Product> getProduct(@PathVariable("productId") Integer productId,
-      @RequestHeader("username") String username,
-      @RequestHeader("password") String password) {
-    boolean isUserLoggedIn = isUserLoggedIn(username, password);
-    if (!isUserLoggedIn) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
+  public ResponseEntity<Product> getProduct(@PathVariable("productId") Integer productId) {
     return new ResponseEntity<>(productService.getProductById(productId), HttpStatus.OK);
   }
 
   @PutMapping("/products/{productId}")
   public ResponseEntity<Product> updateProduct(@PathVariable("productId") Integer productId,
-      @RequestBody Product product, @RequestHeader("username") String username,
-      @RequestHeader("password") String password) {
-    boolean isUserLoggedIn = isUserLoggedIn(username, password);
-    if (!isUserLoggedIn) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
+      @RequestBody Product product) {
     product.setId(productId);
     productService.updateProduct(product);
     return new ResponseEntity<>(productService.getProductById(productId), HttpStatus.OK);
-  }
-
-  private boolean isUserLoggedIn(String username, String password) {
-    Optional<User> optUser = userRepository.findById(username);
-    if (optUser.isPresent()) {
-      User user = optUser.get();
-      return user.getPassword().equals(password) && user.isLoggedIn();
-    }
-    return false;
   }
 }
